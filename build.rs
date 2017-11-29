@@ -28,8 +28,8 @@ fn main() {
     // also don't run pkg-config on macOS/FreeBSD/DragonFly. That'll end up printing
     // `-L /usr/lib` which wreaks havoc with linking to an OpenSSL in /usr/local/lib
     // (Homebrew, Ports, etc.)
-    let want_static = env::var("LIBZ_SYS_STATIC").unwrap_or(String::new()) == "1";
-    if !want_static &&
+    let want_dynamic = env::var("LIBZ_SYS_DYNAMIC").unwrap_or(String::new()) == "1";
+    if want_dynamic &&
        !(host_and_target_contain("apple") ||
          host_and_target_contain("freebsd") ||
          host_and_target_contain("dragonfly")) &&
@@ -49,7 +49,7 @@ fn main() {
         build_zlib_mingw();
     } else if (target.contains("musl") ||
                target != host ||
-               want_static) &&
+               !want_dynamic) &&
               !target.contains("windows-gnu") &&
               !target.contains("android") {
         build_zlib();
